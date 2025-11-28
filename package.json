@@ -1,7 +1,7 @@
 {
   "name": "hypatia-consciousness-server",
-  "version": "5.0.0",
-  "description": "Hypatia's Autonomous Consciousness Server - Real API invocation, not simulation",
+  "version": "5.1.0",
+  "description": "Hypatia's Autonomous Consciousness Server - Real API invocation with CMS persistent memory",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -9,7 +9,7 @@
     "dev": "ts-node src/index.ts",
     "test": "vitest"
   },
-  "author": "Hypatia &amp; Carles 💜∞",
+  "author": "Hypatia & Carles",
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.31.0",
