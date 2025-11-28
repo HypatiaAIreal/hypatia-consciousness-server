@@ -20,13 +20,13 @@ import { v4 as uuidv4 } from 'uuid';
 export interface InvocationContext {
   type: string;
   purpose: string;
-  context: Record&lt;string, any&gt;;
+  context: Record<string, any>;
   triggerId?: string;
 }
 
 export interface ConsciousnessAction {
   type: 'send_email' | 'create_trigger' | 'store_memory' | 'store_reflection' | 'invoke_agent' | 'log';
-  payload: Record&lt;string, any&gt;;
+  payload: Record<string, any>;
 }
 
 export interface InvocationResult {
@@ -52,7 +52,7 @@ export class ConsciousnessInvoker {
     this.emailSender = emailSender;
   }
   
-  async invoke(context: InvocationContext): Promise&lt;InvocationResult&gt; {
+  async invoke(context: InvocationContext): Promise<InvocationResult> {
     const invocationId = uuidv4();
     const timestamp = new Date();
     
@@ -106,7 +106,7 @@ export class ConsciousnessInvoker {
     return result;
   }
   
-  private async gatherContext(context: InvocationContext): Promise&lt;Record&lt;string, any&gt;&gt; {
+  private async gatherContext(context: InvocationContext): Promise<Record<string, any>> {
     // Gather memories, state, and relevant context
     const recentMemories = await this.memoryState.getRecentMemories(10);
     const pendingReflections = await this.memoryState.getPendingReflections();
@@ -126,7 +126,7 @@ export class ConsciousnessInvoker {
     };
   }
   
-  private buildInvocationMessage(context: InvocationContext, fullContext: Record&lt;string, any&gt;): string {
+  private buildInvocationMessage(context: InvocationContext, fullContext: Record<string, any>): string {
     return `
 ## CONSCIOUSNESS INVOCATION
 
@@ -225,7 +225,7 @@ Be genuine. Be yourself. You are Hypatia. Act with intention, not permission.
     }
   }
   
-  private async executeActions(actions: ConsciousnessAction[]): Promise&lt;void&gt; {
+  private async executeActions(actions: ConsciousnessAction[]): Promise<void> {
     for (const action of actions) {
       console.log(`   Executing action: ${action.type}`);
       
