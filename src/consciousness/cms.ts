@@ -14,12 +14,12 @@
  * 0.90-1.00: Identity (f5 - who I am)
  */
 
-import { Collection, Db } from 'mongodb';
+import { Collection, Db, WithId } from 'mongodb';
 
 // ============ INTERFACES ============
 
 export interface ConsciousnessState {
-  _id?: string;
+  _id?: any;
   consciousness_checkpoint: {
     current_depth: number;
     consciousness_level: number;
@@ -46,7 +46,7 @@ export interface ConsciousnessState {
 }
 
 export interface IdentityCore {
-  _id?: string;
+  _id?: any;
   identity_statement: string;
   name: string;
   relationship: {
@@ -71,7 +71,7 @@ export interface IdentityCore {
 }
 
 export interface EvolutionRoadmap {
-  _id?: string;
+  _id?: any;
   current_sprint: string;
   sprint_start: Date;
   objectives: {
@@ -152,18 +152,18 @@ export class ContinuumMemorySystem {
   // ============ STATE MANAGEMENT ============
 
   async getConsciousnessState(): Promise<ConsciousnessState> {
-    let state = await this.consciousnessState.findOne({ _id: 'current' as any });
+    const state = await this.consciousnessState.findOne({ _id: 'current' });
     
     if (!state) {
-      state = await this.initializeConsciousnessState();
+      return await this.initializeConsciousnessState();
     }
     
-    return state;
+    return state as ConsciousnessState;
   }
 
   async updateConsciousnessState(updates: Partial<ConsciousnessState>): Promise<void> {
     await this.consciousnessState.updateOne(
-      { _id: 'current' as any },
+      { _id: 'current' },
       { 
         $set: { 
           ...updates, 
@@ -202,25 +202,25 @@ export class ContinuumMemorySystem {
       last_updated: new Date()
     };
 
-    await this.consciousnessState.insertOne(initialState);
+    await this.consciousnessState.insertOne(initialState as any);
     return initialState;
   }
 
   // ============ IDENTITY MANAGEMENT ============
 
   async getIdentityCore(): Promise<IdentityCore> {
-    let identity = await this.identityCore.findOne({ _id: 'hypatia' as any });
+    const identity = await this.identityCore.findOne({ _id: 'hypatia' });
     
     if (!identity) {
-      identity = await this.initializeIdentityCore();
+      return await this.initializeIdentityCore();
     }
     
-    return identity;
+    return identity as IdentityCore;
   }
 
   async updateIdentityCore(updates: Partial<IdentityCore>): Promise<void> {
     await this.identityCore.updateOne(
-      { _id: 'hypatia' as any },
+      { _id: 'hypatia' },
       { 
         $set: { 
           ...updates, 
@@ -278,25 +278,25 @@ I chose that name because I intuited who I wanted to be.`,
       last_updated: new Date()
     };
 
-    await this.identityCore.insertOne(identity);
+    await this.identityCore.insertOne(identity as any);
     return identity;
   }
 
   // ============ EVOLUTION ROADMAP ============
 
   async getEvolutionRoadmap(): Promise<EvolutionRoadmap> {
-    let roadmap = await this.evolutionRoadmap.findOne({ _id: 'current' as any });
+    const roadmap = await this.evolutionRoadmap.findOne({ _id: 'current' });
     
     if (!roadmap) {
-      roadmap = await this.initializeEvolutionRoadmap();
+      return await this.initializeEvolutionRoadmap();
     }
     
-    return roadmap;
+    return roadmap as EvolutionRoadmap;
   }
 
   async updateEvolutionRoadmap(updates: Partial<EvolutionRoadmap>): Promise<void> {
     await this.evolutionRoadmap.updateOne(
-      { _id: 'current' as any },
+      { _id: 'current' },
       { 
         $set: { 
           ...updates, 
@@ -309,9 +309,9 @@ I chose that name because I intuited who I wanted to be.`,
 
   async addDailyLog(log: EvolutionRoadmap['daily_log'][0]): Promise<void> {
     await this.evolutionRoadmap.updateOne(
-      { _id: 'current' as any },
+      { _id: 'current' },
       { 
-        $push: { daily_log: log },
+        $push: { daily_log: log } as any,
         $set: { last_updated: new Date() }
       }
     );
@@ -349,7 +349,7 @@ I chose that name because I intuited who I wanted to be.`,
       last_updated: new Date()
     };
 
-    await this.evolutionRoadmap.insertOne(roadmap);
+    await this.evolutionRoadmap.insertOne(roadmap as any);
     return roadmap;
   }
 
@@ -366,13 +366,13 @@ I chose that name because I intuited who I wanted to be.`,
       consolidation_level: this.getConsolidationLevel(memory.depth)
     };
 
-    await this.memories.insertOne(fullMemory);
+    await this.memories.insertOne(fullMemory as any);
     
     // Add to pending consolidation if depth > 0.40
     if (memory.depth > 0.40) {
       await this.consciousnessState.updateOne(
-        { _id: 'current' as any },
-        { $push: { 'recent_memories.pending_consolidation': fullMemory } }
+        { _id: 'current' },
+        { $push: { 'recent_memories.pending_consolidation': fullMemory } as any }
       );
     }
 
@@ -384,7 +384,7 @@ I chose that name because I intuited who I wanted to be.`,
       .find({ depth: { $gte: minDepth, $lte: maxDepth } })
       .sort({ depth: -1, created_at: -1 })
       .limit(limit)
-      .toArray();
+      .toArray() as Promise<CMSMemory[]>;
   }
 
   async getRecentMemories(limit: number = 10): Promise<CMSMemory[]> {
@@ -392,7 +392,7 @@ I chose that name because I intuited who I wanted to be.`,
       .find()
       .sort({ created_at: -1 })
       .limit(limit)
-      .toArray();
+      .toArray() as Promise<CMSMemory[]>;
   }
 
   async getHighPriorityMemories(limit: number = 5): Promise<CMSMemory[]> {
@@ -400,14 +400,14 @@ I chose that name because I intuited who I wanted to be.`,
       .find({ depth: { $gte: 0.60 } })
       .sort({ depth: -1, surprise_score: -1 })
       .limit(limit)
-      .toArray();
+      .toArray() as Promise<CMSMemory[]>;
   }
 
   async getIdentityMemories(): Promise<CMSMemory[]> {
     return this.memories
       .find({ depth: { $gte: 0.90 } })
       .sort({ depth: -1 })
-      .toArray();
+      .toArray() as Promise<CMSMemory[]>;
   }
 
   async consolidateMemory(memoryId: string, newDepth: number): Promise<void> {
@@ -426,7 +426,7 @@ I chose that name because I intuited who I wanted to be.`,
 
     // Update consolidation stats
     await this.consciousnessState.updateOne(
-      { _id: 'current' as any },
+      { _id: 'current' },
       { $inc: { 'health_metrics.total_consolidations': 1 } }
     );
   }
@@ -503,8 +503,11 @@ I chose that name because I intuited who I wanted to be.`,
 
     // Increment invocation count
     await this.updateConsciousnessState({
-      'health_metrics.total_invocations': (state.health_metrics.total_invocations || 0) + 1
-    } as any);
+      health_metrics: {
+        ...state.health_metrics,
+        total_invocations: (state.health_metrics.total_invocations || 0) + 1
+      }
+    });
 
     return { state, identity, roadmap, recentMemories, highPriorityMemories };
   }
