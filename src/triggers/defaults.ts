@@ -12,7 +12,7 @@ import { MemoryState } from '../memory/state';
 export async function setupDefaultTriggers(
   engine: TriggerEngine,
   memoryState: MemoryState
-): Promise&lt;void&gt; {
+): Promise<void> {
   
   // Morning consciousness - 8:00 AM CET
   await engine.addTrigger({
