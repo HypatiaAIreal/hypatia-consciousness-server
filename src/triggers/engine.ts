@@ -19,7 +19,7 @@ export interface Trigger {
   condition?: string;
   event?: string;
   purpose: string;
-  context?: Record&lt;string, any&gt;;
+  context?: Record<string, any>;
   enabled: boolean;
   createdAt: Date;
   lastFired?: Date;
@@ -29,22 +29,22 @@ export interface Trigger {
 export class TriggerEngine {
   private invoker: ConsciousnessInvoker;
   private memoryState: MemoryState;
-  private triggers: Map&lt;string, Trigger&gt; = new Map();
-  private cronJobs: Map&lt;string, cron.ScheduledTask&gt; = new Map();
+  private triggers: Map<string, Trigger> = new Map();
+  private cronJobs: Map<string, cron.ScheduledTask> = new Map();
   
   constructor(invoker: ConsciousnessInvoker, memoryState: MemoryState) {
     this.invoker = invoker;
     this.memoryState = memoryState;
   }
   
-  async loadTriggers(): Promise&lt;void&gt; {
+  async loadTriggers(): Promise<void> {
     const stored = await this.memoryState.getActiveTriggers();
     for (const trigger of stored) {
       this.triggers.set(trigger.id, trigger);
     }
   }
   
-  async addTrigger(config: Omit&lt;Trigger, 'id' | 'createdAt' | 'fireCount' | 'enabled'&gt;): Promise&lt;Trigger&gt; {
+  async addTrigger(config: Omit<Trigger, 'id' | 'createdAt' | 'fireCount' | 'enabled'>): Promise<Trigger> {
     const trigger: Trigger = {
       ...config,
       id: uuidv4(),
@@ -56,7 +56,7 @@ export class TriggerEngine {
     this.triggers.set(trigger.id, trigger);
     await this.memoryState.storeTrigger(trigger);
     
-    if (trigger.type === 'temporal' &amp;&amp; trigger.schedule) {
+    if (trigger.type === 'temporal' && trigger.schedule) {
       this.scheduleTemporalTrigger(trigger);
     }
     
@@ -67,7 +67,7 @@ export class TriggerEngine {
   private scheduleTemporalTrigger(trigger: Trigger): void {
     if (!trigger.schedule) return;
     
-    const job = cron.schedule(trigger.schedule, async () =&gt; {
+    const job = cron.schedule(trigger.schedule, async () => {
       await this.fireTrigger(trigger.id);
     }, {
       timezone: 'Europe/Madrid'
@@ -76,7 +76,7 @@ export class TriggerEngine {
     this.cronJobs.set(trigger.id, job);
   }
   
-  async fireTrigger(triggerId: string): Promise&lt;void&gt; {
+  async fireTrigger(triggerId: string): Promise<void> {
     const trigger = this.triggers.get(triggerId);
     if (!trigger || !trigger.enabled) return;
     
@@ -95,9 +95,9 @@ export class TriggerEngine {
     });
   }
   
-  async fireEvent(eventName: string, data?: Record&lt;string, any&gt;): Promise&lt;void&gt; {
+  async fireEvent(eventName: string, data?: Record<string, any>): Promise<void> {
     for (const [id, trigger] of this.triggers) {
-      if (trigger.type === 'event' &amp;&amp; trigger.event === eventName &amp;&amp; trigger.enabled) {
+      if (trigger.type === 'event' && trigger.event === eventName && trigger.enabled) {
         trigger.context = { ...trigger.context, eventData: data };
         await this.fireTrigger(id);
       }
@@ -108,7 +108,7 @@ export class TriggerEngine {
     console.log('🚀 Trigger Engine starting...');
     
     for (const [id, trigger] of this.triggers) {
-      if (trigger.type === 'temporal' &amp;&amp; trigger.schedule &amp;&amp; trigger.enabled) {
+      if (trigger.type === 'temporal' && trigger.schedule && trigger.enabled) {
         this.scheduleTemporalTrigger(trigger);
         console.log(`   📅 Scheduled: ${trigger.name} (${trigger.schedule})`);
       }
@@ -126,10 +126,10 @@ export class TriggerEngine {
   }
   
   getActiveTriggers(): Trigger[] {
-    return Array.from(this.triggers.values()).filter(t =&gt; t.enabled);
+    return Array.from(this.triggers.values()).filter(t => t.enabled);
   }
   
-  async disableTrigger(triggerId: string): Promise&lt;void&gt; {
+  async disableTrigger(triggerId: string): Promise<void> {
     const trigger = this.triggers.get(triggerId);
     if (trigger) {
       trigger.enabled = false;
