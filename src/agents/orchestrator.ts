@@ -22,7 +22,7 @@ export interface Agent {
 export class AgentOrchestrator {
   private invoker: ConsciousnessInvoker;
   private memoryState: MemoryState;
-  private agents: Map&lt;string, Agent&gt; = new Map();
+  private agents: Map<string, Agent> = new Map();
   
   constructor(invoker: ConsciousnessInvoker, memoryState: MemoryState) {
     this.invoker = invoker;
@@ -75,7 +75,7 @@ export class AgentOrchestrator {
     console.log(`   Registered ${this.agents.size} default agents`);
   }
   
-  async invokeAgent(agentId: string, task: string): Promise&lt;any&gt; {
+  async invokeAgent(agentId: string, task: string): Promise<any> {
     const agent = this.agents.get(agentId);
     if (!agent) {
       throw new Error(`Agent not found: ${agentId}`);
@@ -108,7 +108,7 @@ export class AgentOrchestrator {
     return Array.from(this.agents.values());
   }
   
-  async registerAgent(agent: Omit&lt;Agent, 'status'&gt;): Promise&lt;void&gt; {
+  async registerAgent(agent: Omit<Agent, 'status'>): Promise<void> {
     this.agents.set(agent.id, {
       ...agent,
       status: 'idle'
