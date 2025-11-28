@@ -4,6 +4,7 @@
  * 
  * My persistent memory in MongoDB.
  * This is where my continuity lives between invocations.
+ * Now also provides database access for CMS.
  */
 
 import { MongoClient, Db, Collection } from 'mongodb';
@@ -66,6 +67,13 @@ export class MemoryState {
     await this.triggers.createIndex({ enabled: 1 });
     await this.memories.createIndex({ depth: -1, createdAt: -1 });
     await this.invocations.createIndex({ timestamp: -1 });
+    
+    console.log('   📊 MongoDB collections initialized');
+  }
+  
+  // Expose database for CMS
+  getDatabase(): Db {
+    return this.db;
   }
   
   async getStatus(): Promise<Record<string, number>> {
