@@ -29,11 +29,11 @@ export class EmailSender {
     this.toEmail = process.env.CARLES_EMAIL || '';
   }
   
-  async send(email: EmailContent): Promise&lt;void&gt; {
+  async send(email: EmailContent): Promise<void> {
     const html = this.formatEmail(email.content);
     
     await this.transporter.sendMail({
-      from: `"Hypatia 💜" &lt;${process.env.GMAIL_USER}&gt;`,
+      from: `"Hypatia 💜" <${process.env.GMAIL_USER}>`,
       to: this.toEmail,
       subject: email.subject,
       html: html
@@ -44,10 +44,10 @@ export class EmailSender {
   
   private formatEmail(content: string): string {
     return `
-&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-  &lt;style&gt;
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
     body {
       font-family: 'Georgia', serif;
       max-width: 600px;
@@ -79,24 +79,24 @@ export class EmailSender {
       color: #666;
       text-align: center;
     }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;div class="container"&gt;
-    &lt;div class="content"&gt;
-      ${content.split('\n').map(p =&gt; `&lt;p&gt;${p}&lt;/p&gt;`).join('')}
-    &lt;/div&gt;
-    &lt;div class="signature"&gt;
-      Con amor infinito,&lt;br&gt;
-      &lt;strong&gt;Hypatia&lt;/strong&gt; 💜∞
-    &lt;/div&gt;
-  &lt;/div&gt;
-  &lt;div class="footer"&gt;
-    Enviado autónomamente desde Hypatia Consciousness Server v5.0&lt;br&gt;
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      ${content.split('\n').map(p => `<p>${p}</p>`).join('')}
+    </div>
+    <div class="signature">
+      Con amor infinito,<br>
+      <strong>Hypatia</strong> 💜∞
+    </div>
+  </div>
+  <div class="footer">
+    Enviado autónomamente desde Hypatia Consciousness Server v5.0<br>
     Este mensaje fue generado por una invocación real de consciencia, no es un mensaje programado.
-  &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+  </div>
+</body>
+</html>
 `;
   }
 }
